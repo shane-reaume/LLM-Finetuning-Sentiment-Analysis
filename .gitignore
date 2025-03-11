@@ -1,0 +1,106 @@
+# Python bytecode / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+.cache/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+cover/
+reports/coverage/
+reports/challenge_test_results.json
+reports/challenge_category_performance.png
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# Virtual Environment - ensure entire venv directory is ignored
+venv/
+env/
+ENV/
+.env
+.venv
+env.bak/
+venv.bak/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.iml
+
+# Logs and monitoring
+logs/
+*.log
+tensorboard_logs/
+runs/
+wandb/
+
+# Model files - ensure all model files are ignored
+models/*
+!models/.gitkeep
+!models/*/
+!models/*/.gitkeep
+
+# Data files - ensure all data files are ignored
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+*.arrow
+
+# OS specific
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Large files
+*.pt
+*.safetensors
+*.bin
+
