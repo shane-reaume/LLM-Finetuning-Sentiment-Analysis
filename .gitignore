@@ -80,8 +80,6 @@ wandb/
 # Model files - ensure all model files are ignored
 models/*
 !models/.gitkeep
-!models/*/
-!models/*/.gitkeep
 
 # Data files - ensure all data files are ignored
 data/raw/*
