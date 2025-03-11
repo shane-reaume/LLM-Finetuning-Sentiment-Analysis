@@ -6,7 +6,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Challenge Tests](https://img.shields.io/badge/challenge%20tests-100%25-brightgreen.svg)](reports/challenge_test_results.json)
 
-A beginner-friendly project for fine-tuning, testing, and deploying language models for sentiment analysis with a strong emphasis on quality assurance and testing methodologies.
+A comprehensive educational project demonstrating transformer-based NLP model fine-tuning with robust QA practices. This repository showcases supervised fine-tuning of DistilBERT for binary sentiment classification, implementing advanced testing methodologies including adversarial examples, edge case handling, and performance benchmarking—all designed for ML practitioners seeking to improve model reliability and evaluation techniques.
 
 ## 🎯 What This Project Does
 
