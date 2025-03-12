@@ -77,11 +77,12 @@ tensorboard_logs/
 runs/
 wandb/
 
-# Model files - ensure all model files are ignored
-models/*
-!models/.gitkeep
-!models/*/
-!models/*/.gitkeep
+# Model files - only keep directory structure with .gitkeep files
+# Ignore all model files but keep the directory structure
+models/sentiment/*
+models/sentiment_improved/*
+!models/sentiment/.gitkeep
+!models/sentiment_improved/.gitkeep
 
 # Data files - ensure all data files are ignored
 data/raw/*
