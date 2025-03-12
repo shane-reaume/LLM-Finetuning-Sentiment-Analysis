@@ -1,1 +1,16 @@
-{"model_name": "distilbert-base-uncased", "num_labels": 2, "max_length": 128}
+{
+  "library_name": "transformers",
+  "task": "text-classification",
+  "tags": [
+    "sentiment-analysis",
+    "text-classification",
+    "pytorch",
+    "distilbert",
+    "imdb"
+  ],
+  "pipeline_tag": "text-classification",
+  "language": "en",
+  "license": "mit",
+  "base_model": "distilbert-base-uncased",
+  "version": "2.0"
+}

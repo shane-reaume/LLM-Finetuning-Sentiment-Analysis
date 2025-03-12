@@ -15,12 +15,14 @@ This project demonstrates how to:
 - Fine-tune language models for sentiment classification
 - Implement proper testing and evaluation methodologies for LLMs
 - Create evaluation metrics and test sets for consistent model testing
-- Deploy models to Hugging Face Hub
+- Deploy models to Hugging Face Hub as a Transformer model
+  - original model: [huggingface.co/shane-reaume/imdb-sentiment-analysis](https://huggingface.co/shane-reaume/imdb-sentiment-analysis)
+  - improved model: [huggingface.co/shane-reaume/imdb-sentiment-analysis-v2](https://huggingface.co/shane-reaume/imdb-sentiment-analysis-v2)
 - Create interactive demos for testing models
 
 ## 📋 System Requirements
 
-- **Python 3.12.3 or higher**
+- **Python 3.13 or higher**
 - **Git** for version control
 - **GPU with VRAM**:
   - 8GB+ recommended for sentiment analysis
@@ -35,11 +37,20 @@ This project demonstrates how to:
 
 ## 🔧 Initial Setup
 
+Go to the [GitHub repository](https://github.com/shane-reaume/LLM-Finetuning-Sentiment-Analysis) and Fork the repository or click the "Code" button to clone the repository.
+
 ```bash
-git clone https://github.com/your-repo/LLM-Finetuning-Sentiment-Analysis.git
+git clone https://github.com/<your-repo if forked or shane-reaume>/LLM-Finetuning-Sentiment-Analysis.git
+
 cd LLM-Finetuning-Sentiment-Analysis
+
+# Setup env Linux
 chmod +x setup_env.sh
 ./setup_env.sh
+
+# Setup env for WSL Ubuntu
+chmod +x setup_env_wsl_ubuntu.sh
+./setup_env_wsl_ubuntu.sh
 ```
 
 This script will:
@@ -116,10 +127,11 @@ print(result)  # [{'label': 'POSITIVE', 'score': 0.9998}]
 The project is organized as follows:
 
 - **Sentiment Analysis (DistilBERT)**: A classification task that analyzes movie reviews
-   - Training: `src/model/sentiment_train.py`
-   - Inference: `src/model/sentiment_inference.py`  
-   - Demo: `src/sentiment_demo.py`
-   - Tests: `tests/test_sentiment_model.py`
+
+- Training: `src/model/sentiment_train.py`
+- Inference: `src/model/sentiment_inference.py`  
+- Demo: `src/sentiment_demo.py`
+- Tests: `tests/test_sentiment_model.py`
 
 The project uses:
 
@@ -157,26 +169,31 @@ LLM-Finetuning-Sentiment-Analysis/
 If you encounter issues with the pre-commit hook preventing you from committing changes:
 
 1. **Ensure your virtual environment is activated**:
+
    ```bash
    source venv/bin/activate
    ```
 
 2. **Run tests manually** to see what's failing:
+
    ```bash
    ./run_tests.sh
    ```
 
 3. **Use the force push script** to temporarily bypass hooks:
+
    ```bash
    ./force_push.sh
    ```
 
 4. **Disable hooks temporarily** for a single commit:
+
    ```bash
    git commit --no-verify -m "Your commit message"
    ```
 
 5. **Reinstall hooks** if they become corrupted:
+
    ```bash
    ./setup_hooks.sh
    ```
