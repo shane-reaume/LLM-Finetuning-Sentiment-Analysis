@@ -4,7 +4,7 @@
 [![Code Coverage](https://codecov.io/gh/shane-reaume/LLM-Finetuning-Sentiment-Analysis/graph/badge.svg)](https://codecov.io/gh/shane-reaume/LLM-Finetuning-Sentiment-Analysis)
 [![Tests](https://github.com/shane-reaume/LLM-Finetuning-Sentiment-Analysis/actions/workflows/test.yml/badge.svg)](https://github.com/shane-reaume/LLM-Finetuning-Sentiment-Analysis/actions/workflows/test.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Challenge Tests](https://img.shields.io/badge/challenge%20tests-see%20report-blue)](https://shane-reaume.github.io/LLM-Finetuning-Sentiment-Analysis/reports/challenge_test_results.html)
+[![Challenge Tests](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/shane-reaume/LLM-Finetuning-Sentiment-Analysis/gh-pages/challenge-tests-badge.json)](https://shane-reaume.github.io/LLM-Finetuning-Sentiment-Analysis/reports/challenge_test_results.html)
 
 A comprehensive educational project demonstrating transformer-based NLP model fine-tuning with robust QA practices. This repository showcases supervised fine-tuning of DistilBERT for binary sentiment classification, implementing advanced testing methodologies including adversarial examples, edge case handling, and performance benchmarking—all designed for ML practitioners seeking to improve model reliability and evaluation techniques.
 
@@ -102,6 +102,17 @@ The project includes a specialized framework for testing model performance on pa
 - **Easy extension**: Tools to add new challenging cases as they're discovered
 - **Detailed reporting**: JSON reports and summaries of model weaknesses
 
+### New Testing Infrastructure
+
+The project now includes enhanced testing infrastructure:
+
+- **Comprehensive Test Coverage**: Tracking code coverage with Codecov integration
+- **Coverage Reporting**: Detailed HTML reports showing which lines of code are tested
+- **Test Improvement Plan**: Structured approach to increasing test coverage (see `TEST_IMPROVEMENT_PLAN.md`)
+- **Low Coverage Identification**: Tools to identify files with insufficient test coverage
+- **GitHub Actions Integration**: Automated testing and badge generation on every commit
+- **Pre-commit Hooks**: Ensuring tests pass before code is committed
+
 ## 📊 Example Results
 
 After training the sentiment analysis model, you'll be able to classify text sentiment:
@@ -157,9 +168,27 @@ LLM-Finetuning-Sentiment-Analysis/
 ├── GETTING_STARTED.md                # Sentiment analysis guide
 ├── requirements.txt                  # Project dependencies
 ├── run_tests.sh                      # Script to run all tests
+├── run_tests_with_coverage.sh        # Script to run tests with coverage reporting
 ├── setup_env.sh                      # Environment setup script
 ├── setup_hooks.sh                    # Git hooks setup script
-└── force_push.sh                     # Script to bypass pre-commit hooks
+├── TEST_IMPROVEMENT_PLAN.md          # Plan for improving test coverage
+└── update_badge.sh                   # Script to update GitHub Pages badges
+```
+
+## Running Tests with Coverage
+
+To run tests and generate coverage reports:
+
+```bash
+# Run all tests with coverage reporting
+./run_tests_with_coverage.sh
+
+# View the HTML coverage report
+open htmlcov/index.html  # On macOS
+xdg-open htmlcov/index.html  # On Linux
+
+# Identify files with low coverage
+python -m src.utils.identify_low_coverage --threshold 50 --format markdown --output coverage_report.md
 ```
 
 ## Troubleshooting
@@ -203,3 +232,5 @@ If you encounter issues with the pre-commit hook preventing you from committing 
 - **Hugging Face Transformers & Datasets**: For models, tokenizers, and data loading
 - **Pytest**: For unit and integration testing
 - **Weights & Biases**: For experiment tracking
+- **Codecov**: For code coverage tracking and reporting
+- **GitHub Actions**: For continuous integration and automated testing
