@@ -101,6 +101,12 @@ if git commit -m "$COMMIT_MESSAGE"; then
             # Copy _site contents to the root and commit
             cp -r _site/* .
             
+            # Explicitly copy hidden files
+            cp -r _site/.* . 2>/dev/null || true
+            
+            # Create .nojekyll file regardless (in case it wasn't copied)
+            touch .nojekyll
+            
             # Add all badge files and reports explicitly, forcing ignored files
             git add -f *.json .nojekyll
             git add -f reports/ || true
