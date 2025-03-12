@@ -50,7 +50,7 @@ This script will:
 
 ## 🤖 Sentiment Analysis Project
 
-![Sentiment Analysis Demo](data/img/sentiment-analysis-demo.png)
+![Sentiment Analysis Demo](data/img/src_sentiment_demo.png)
 
 - **Model Architecture**: Fine-tuning a **DistilBERT** encoder model for binary text classification
 - **Training Methodology**: Binary classification on the IMDB movie reviews dataset
