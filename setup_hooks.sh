@@ -21,7 +21,10 @@ source venv/bin/activate
 
 # Stash any changes to test reports and coverage files
 echo "Stashing any changes to test reports and coverage files..."
-git stash push -q --keep-index -- reports/ htmlcov/
+# Check if the directories exist before trying to stash
+if [ -d "reports" ] || [ -d "htmlcov" ]; then
+    git stash push -q --keep-index -- reports/ htmlcov/ || true
+fi
 
 # Run tests before committing
 echo "Running tests before commit..."
@@ -30,9 +33,11 @@ echo "Running tests before commit..."
 # Store the exit code
 EXIT_CODE=$?
 
-# Restore stashed changes
-echo "Restoring stashed changes..."
-git stash pop -q || true
+# Restore stashed changes if there were any
+if [ -d "reports" ] || [ -d "htmlcov" ]; then
+    echo "Restoring stashed changes..."
+    git stash pop -q || true
+fi
 
 # Deactivate virtual environment
 deactivate

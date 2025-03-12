@@ -19,46 +19,57 @@ def generate_challenge_test_badge(results_file, output_dir):
         results_file: Path to the challenge test results JSON file
         output_dir: Directory to save the badge JSON file
     """
+    # Ensure output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+    
+    # Default badge data (used if we can't read the results)
+    badge_data = {
+        "schemaVersion": 1,
+        "label": "challenge tests",
+        "message": "unknown",
+        "color": "lightgrey"
+    }
+    
     try:
-        with open(results_file, 'r') as f:
-            results = json.load(f)
-        
-        # Extract overall accuracy from results
-        if 'overall_accuracy' in results:
-            accuracy = results['overall_accuracy']
-        elif 'accuracy' in results:
-            accuracy = results['accuracy']
+        # Check if results file exists
+        if not os.path.exists(results_file):
+            print(f"Warning: Results file {results_file} not found. Using default badge.")
+            badge_data["message"] = "no data"
         else:
-            # Calculate from individual results if available
-            correct = sum(1 for item in results.get('results', []) if item.get('correct', False))
-            total = len(results.get('results', []))
-            accuracy = correct / total if total > 0 else 0
+            with open(results_file, 'r') as f:
+                results = json.load(f)
             
-        # Format accuracy as percentage
-        accuracy_pct = round(accuracy * 100)
-        
-        # Determine color based on accuracy
-        if accuracy_pct >= 90:
-            color = "brightgreen"
-        elif accuracy_pct >= 80:
-            color = "green"
-        elif accuracy_pct >= 70:
-            color = "yellowgreen"
-        elif accuracy_pct >= 60:
-            color = "yellow"
-        else:
-            color = "red"
+            # Extract overall accuracy from results
+            if 'summary' in results and 'accuracy' in results['summary']:
+                accuracy = results['summary']['accuracy']
+            elif 'overall_accuracy' in results:
+                accuracy = results['overall_accuracy']
+            elif 'accuracy' in results:
+                accuracy = results['accuracy']
+            else:
+                # Calculate from individual results if available
+                correct = sum(1 for item in results.get('results', []) if item.get('correct', False))
+                total = len(results.get('results', []))
+                accuracy = correct / total if total > 0 else 0
+                
+            # Format accuracy as percentage
+            accuracy_pct = round(accuracy * 100)
             
-        # Create badge data
-        badge_data = {
-            "schemaVersion": 1,
-            "label": "challenge tests",
-            "message": f"{accuracy_pct}%",
-            "color": color
-        }
-        
-        # Ensure output directory exists
-        os.makedirs(output_dir, exist_ok=True)
+            # Determine color based on accuracy
+            if accuracy_pct >= 90:
+                color = "brightgreen"
+            elif accuracy_pct >= 80:
+                color = "green"
+            elif accuracy_pct >= 70:
+                color = "yellowgreen"
+            elif accuracy_pct >= 60:
+                color = "yellow"
+            else:
+                color = "red"
+                
+            # Update badge data
+            badge_data["message"] = f"{accuracy_pct}%"
+            badge_data["color"] = color
         
         # Write badge data to file
         output_file = Path(output_dir) / "challenge-tests-badge.json"
@@ -69,18 +80,7 @@ def generate_challenge_test_badge(results_file, output_dir):
         
     except Exception as e:
         print(f"Error generating badge: {e}")
-        # Create a fallback badge
-        badge_data = {
-            "schemaVersion": 1,
-            "label": "challenge tests",
-            "message": "unknown",
-            "color": "lightgrey"
-        }
-        
-        # Ensure output directory exists
-        os.makedirs(output_dir, exist_ok=True)
-        
-        # Write badge data to file
+        # Write the default badge data to file
         output_file = Path(output_dir) / "challenge-tests-badge.json"
         with open(output_file, 'w') as f:
             json.dump(badge_data, f, indent=2)
