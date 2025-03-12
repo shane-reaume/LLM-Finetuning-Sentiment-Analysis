@@ -144,7 +144,7 @@ sentiment = pipeline("sentiment-analysis", model="{repo_name}")
 
 # Analyze text
 result = sentiment("I really enjoyed this movie!")
-print(result)  # [{'label': 'POSITIVE', 'score': 0.9998}]
+print(result)  # [{{'label': 'POSITIVE', 'score': 0.9998}}]
 
 # Batch processing
 texts = [
@@ -153,8 +153,8 @@ texts = [
 ]
 results = sentiment(texts)
 for i, (text, result) in enumerate(zip(texts, results)):
-    print(f"Text: {{text}}")
-    print(f"Sentiment: {{result['label']}}, Score: {{result['score']:.4f}}")
+    print(f"Text: {{{{text}}}}")
+    print(f"Sentiment: {{{{result['label']}}}}, Score: {{{{result['score']:.4f}}}}")
 ```
 
 ### Loading Model Directly
@@ -183,7 +183,7 @@ confidence = probabilities[0][prediction].item()
 
 # Map prediction to label (0: negative, 1: positive)
 sentiment_label = "POSITIVE" if prediction == 1 else "NEGATIVE"
-print(f"Sentiment: {{sentiment_label}}, Confidence: {{confidence:.4f}}")
+print(f"Sentiment: {{{{sentiment_label}}}}, Confidence: {{{{confidence:.4f}}}}")
 ```
 
 ## Limitations
