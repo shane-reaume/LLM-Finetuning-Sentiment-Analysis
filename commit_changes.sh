@@ -8,6 +8,9 @@ BLUE='\033[0;34m'
 YELLOW='\033[0;33m'
 NC='\033[0m' # No Color
 
+# Exit on error
+set -e
+
 # Check if a commit message was provided
 if [ $# -eq 0 ]; then
     echo -e "${YELLOW}No commit message provided. Using default message.${NC}"
@@ -19,10 +22,23 @@ fi
 echo -e "${BLUE}Committing changes with pre-commit hook disabled...${NC}"
 
 # Temporarily disable pre-commit hook
+PRE_COMMIT_DISABLED=false
 if [ -f ".git/hooks/pre-commit" ]; then
     mv .git/hooks/pre-commit .git/hooks/pre-commit.disabled
+    PRE_COMMIT_DISABLED=true
     echo -e "${GREEN}Pre-commit hook temporarily disabled.${NC}"
 fi
+
+# Function to restore pre-commit hook
+restore_hook() {
+    if [ "$PRE_COMMIT_DISABLED" = true ] && [ -f ".git/hooks/pre-commit.disabled" ]; then
+        mv .git/hooks/pre-commit.disabled .git/hooks/pre-commit
+        echo -e "${GREEN}Pre-commit hook restored.${NC}"
+    fi
+}
+
+# Trap to ensure hook is restored on exit
+trap restore_hook EXIT
 
 # Add all changes
 echo -e "${BLUE}Adding all changes...${NC}"
@@ -30,16 +46,7 @@ git add .
 
 # Commit changes
 echo -e "${BLUE}Committing changes with message: ${COMMIT_MESSAGE}${NC}"
-git commit -m "$COMMIT_MESSAGE"
-COMMIT_RESULT=$?
-
-# Restore pre-commit hook
-if [ -f ".git/hooks/pre-commit.disabled" ]; then
-    mv .git/hooks/pre-commit.disabled .git/hooks/pre-commit
-    echo -e "${GREEN}Pre-commit hook restored.${NC}"
-fi
-
-if [ $COMMIT_RESULT -eq 0 ]; then
+if git commit -m "$COMMIT_MESSAGE"; then
     echo -e "${GREEN}Changes committed successfully!${NC}"
     
     # Ask if user wants to push changes
@@ -47,10 +54,7 @@ if [ $COMMIT_RESULT -eq 0 ]; then
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo -e "${BLUE}Pushing changes...${NC}"
-        git push
-        PUSH_RESULT=$?
-        
-        if [ $PUSH_RESULT -eq 0 ]; then
+        if git push; then
             echo -e "${GREEN}Changes pushed successfully!${NC}"
         else
             echo -e "${RED}Push failed.${NC}"
