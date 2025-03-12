@@ -100,7 +100,12 @@ if git commit -m "$COMMIT_MESSAGE"; then
             
             # Copy _site contents to the root and commit
             cp -r _site/* .
-            git add *.json reports/ htmlcov/
+            
+            # Add all badge files and reports explicitly, forcing ignored files
+            git add -f *.json .nojekyll
+            git add -f reports/ || true
+            git add -f htmlcov/ || true
+            
             git commit -m "Update badges and reports [skip ci]"
             
             # Push to gh-pages branch
