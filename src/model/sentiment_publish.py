@@ -1,8 +1,10 @@
 import argparse
+import os
+import json
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 from src.utils.config_utils import load_config
 
-def publish_model(model_dir, repo_name, description=None):
+def publish_model(model_dir, repo_name, description=None, version=None):
     """
     Publish fine-tuned model to Hugging Face Hub
     
@@ -10,6 +12,7 @@ def publish_model(model_dir, repo_name, description=None):
         model_dir (str): Path to model directory
         repo_name (str): Name for the repository on Hugging Face Hub
         description (str, optional): Description for the model
+        version (str, optional): Version tag for the model
     """
     # Load the model and tokenizer
     model = AutoModelForSequenceClassification.from_pretrained(model_dir)
@@ -40,11 +43,41 @@ def publish_model(model_dir, repo_name, description=None):
         ```
         """.format(repo_name=repo_name)
     
+    # Add model metadata for proper inference API support
+    model_info = {
+        "library_name": "transformers",
+        "task": "text-classification",
+        "tags": ["sentiment-analysis", "text-classification", "pytorch", "distilbert", "imdb"],
+        "pipeline_tag": "text-classification",
+        "language": "en",
+        "license": "mit",
+        "base_model": "distilbert-base-uncased"
+    }
+    
+    # Add version tag if provided
+    if version:
+        model_info["version"] = version
+        
+    # Save model info to model directory
+    with open(os.path.join(model_dir, "model_info.json"), "w") as f:
+        json.dump(model_info, f, indent=2)
+    
     # Push to Hub
-    model.push_to_hub(repo_name, use_auth_token=True)
-    tokenizer.push_to_hub(repo_name, use_auth_token=True)
+    model.push_to_hub(
+        repo_name, 
+        use_auth_token=True,
+        commit_message=f"Upload model {'v' + version if version else ''}",
+        metadata=model_info
+    )
+    
+    tokenizer.push_to_hub(
+        repo_name, 
+        use_auth_token=True,
+        commit_message=f"Upload tokenizer {'v' + version if version else ''}"
+    )
     
     print(f"Model successfully published to: https://huggingface.co/{repo_name}")
+    print("The model is now properly configured for the Hugging Face Inference API")
     
 def main():
     parser = argparse.ArgumentParser(description="Publish model to Hugging Face Hub")
@@ -56,16 +89,24 @@ def main():
                         help="Description for the model")
     parser.add_argument("--config", type=str, default="config/sentiment_analysis.yaml", 
                         help="Path to configuration file")
+    parser.add_argument("--version", type=str, default=None,
+                        help="Version tag for the model (e.g., '1.0')")
+    parser.add_argument("--improved", action="store_true",
+                        help="Use the improved model variant")
     args = parser.parse_args()
     
     # Load configuration
     config = load_config(args.config)
     
-    # Use provided model_dir or default from config
-    model_path = args.model_dir if args.model_dir else config["model"]["save_dir"]
+    # Determine model path
+    if args.improved:
+        model_path = "models/sentiment_improved"
+    else:
+        # Use provided model_dir or default from config
+        model_path = args.model_dir if args.model_dir else config["model"]["save_dir"]
     
     # Publish model
-    publish_model(model_path, args.repo_name, args.description)
+    publish_model(model_path, args.repo_name, args.description, args.version)
 
 if __name__ == "__main__":
     main()
