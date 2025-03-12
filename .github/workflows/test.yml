@@ -51,26 +51,8 @@ jobs:
         run: |
           python -m src.model.sentiment_challenge_test --model_dir="models/sentiment" --output="reports/challenge_test_results.json"
           
-      - name: Calculate challenge test accuracy
-        id: challenge_accuracy
-        if: steps.check_model.outputs.MODEL_EXISTS == 'true'
+      - name: Run tests only as verification
         run: |
-          ACCURACY=$(python -c "import json; data=json.load(open('reports/challenge_test_results.json')); print(round(data['summary']['accuracy'] * 100))")
-          echo "ACCURACY=$ACCURACY" >> $GITHUB_ENV
-          echo "Challenge test accuracy: $ACCURACY%"
-          
-      - name: Set default challenge accuracy (when no model)
-        if: steps.check_model.outputs.MODEL_EXISTS != 'true'
-        run: |
-          echo "ACCURACY=0" >> $GITHUB_ENV
-          echo "No challenge tests run, using default accuracy of 0%"
-          
-      - name: Generate coverage badge
-        run: |
-          COVERAGE=$(python -c "import xml.etree.ElementTree as ET; tree = ET.parse('coverage.xml'); root = tree.getroot(); print(round(float(root.attrib['line-rate']) * 100))")
-          echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
-          echo "Coverage: $COVERAGE%"
-          
           # Create site directory for GitHub Pages
           mkdir -p _site
           
@@ -79,28 +61,12 @@ jobs:
           cp -r reports/* _site/reports/ || true
           cp -r htmlcov _site/ || true
           
+          # Copy existing badge files from repository (the source of truth)
+          cp challenge-tests-badge.json _site/
+          cp coverage-badge.json _site/
+          
           # Create .nojekyll file to bypass Jekyll processing
           touch _site/.nojekyll
-          
-          # Create coverage badge JSON
-          cat > _site/coverage-badge.json << EOF
-          {
-            "schemaVersion": 1,
-            "label": "coverage",
-            "message": "$COVERAGE%",
-            "color": "$([ $COVERAGE -ge 80 ] && echo 'brightgreen' || [ $COVERAGE -ge 70 ] && echo 'green' || [ $COVERAGE -ge 60 ] && echo 'yellowgreen' || [ $COVERAGE -ge 50 ] && echo 'yellow' || echo 'red')"
-          }
-          EOF
-          
-          # Create challenge tests badge JSON
-          cat > _site/challenge-tests-badge.json << EOF
-          {
-            "schemaVersion": 1,
-            "label": "challenge tests",
-            "message": "$ACCURACY%",
-            "color": "$([ $ACCURACY -ge 90 ] && echo 'brightgreen' || [ $ACCURACY -ge 80 ] && echo 'green' || [ $ACCURACY -ge 70 ] && echo 'yellowgreen' || [ $ACCURACY -ge 60 ] && echo 'yellow' || echo 'red')"
-          }
-          EOF
       
       # Use the actions/deploy-pages action to deploy to GitHub Pages
       - name: Setup Pages

@@ -58,6 +58,9 @@ cat > _site/coverage-badge.json << EOF
 }
 EOF
 
+# Copy coverage badge to root directory for Git commit
+cp _site/coverage-badge.json ./coverage-badge.json
+
 # Generate challenge tests badge
 echo -e "${YELLOW}Generating challenge tests badge...${NC}"
 cat > _site/challenge-tests-badge.json << EOF
@@ -69,6 +72,9 @@ cat > _site/challenge-tests-badge.json << EOF
 }
 EOF
 
+# Copy challenge tests badge to root directory for Git commit
+cp _site/challenge-tests-badge.json ./challenge-tests-badge.json
+
 echo -e "${BLUE}=== Test Summary ===${NC}"
 echo -e "${GREEN}Challenge Test Accuracy: ${ACCURACY}%${NC}"
 echo -e "${GREEN}Code Coverage: ${COVERAGE}%${NC}"
@@ -78,13 +84,15 @@ if [ "$MODEL_EXISTS" = true ]; then
   echo -e "Challenge test results: ${YELLOW}reports/challenge_test_results.json${NC}"
 fi
 echo -e "Badge files: ${YELLOW}_site/coverage-badge.json${NC} and ${YELLOW}_site/challenge-tests-badge.json${NC}"
+echo -e "Root badge files: ${YELLOW}./coverage-badge.json${NC} and ${YELLOW}./challenge-tests-badge.json${NC} (commit these files)"
 
 # Suggest next steps
 echo -e "${BLUE}=== Next Steps ===${NC}"
 echo -e "1. ${YELLOW}View the HTML coverage report:${NC} open htmlcov/index.html"
 echo -e "2. ${YELLOW}Improve test coverage:${NC} Add more tests for files with low coverage"
+echo -e "3. ${YELLOW}Commit updated badges:${NC} Don't forget to commit the badge files in the root directory"
 if [ "$MODEL_EXISTS" = true ]; then
-  echo -e "3. ${YELLOW}Update badges:${NC} Run ./update_badge.sh ${ACCURACY} to update the GitHub Pages badge"
+  echo -e "4. ${YELLOW}Update badges:${NC} Run ./update_badge.sh ${ACCURACY} to update the GitHub Pages badge"
 else
-  echo -e "3. ${YELLOW}Train model:${NC} Run python -m src.model.sentiment_train to train the model"
+  echo -e "4. ${YELLOW}Train model:${NC} Run python -m src.model.sentiment_train to train the model"
 fi 

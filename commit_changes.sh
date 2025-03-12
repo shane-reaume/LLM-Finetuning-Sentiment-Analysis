@@ -48,6 +48,10 @@ trap restore_hook EXIT
 echo -e "${BLUE}Adding all changes...${NC}"
 git add .
 
+# Explicitly add badge files in the root directory
+echo -e "${BLUE}Ensuring badge files are included...${NC}"
+git add -f challenge-tests-badge.json coverage-badge.json || true
+
 # Commit changes
 echo -e "${BLUE}Committing changes with message: ${COMMIT_MESSAGE}${NC}"
 if git commit -m "$COMMIT_MESSAGE"; then
