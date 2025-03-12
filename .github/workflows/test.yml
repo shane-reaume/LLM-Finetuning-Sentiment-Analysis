@@ -79,6 +79,9 @@ jobs:
           cp -r reports/* _site/reports/ || true
           cp -r htmlcov _site/ || true
           
+          # Create .nojekyll file to bypass Jekyll processing
+          touch _site/.nojekyll
+          
           # Create coverage badge JSON
           cat > _site/coverage-badge.json << EOF
           {
@@ -110,18 +113,7 @@ jobs:
         with:
           path: '_site'
           
-      - name: Deploy to GitHub Pages
-        if: github.ref == 'refs/heads/main'
-        id: deployment
-        uses: actions/deploy-pages@v4
-          
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: ./coverage.xml
-          fail_ci_if_error: false
-          
+      # Upload test reports as artifacts
       - name: Upload test reports as artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -129,4 +121,39 @@ jobs:
           path: |
             reports/
             htmlcov/
-            coverage.xml 
+            coverage.xml
+          
+  # Deploy job
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: test
+    runs-on: ubuntu-latest
+    
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+      
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+          
+  # Continue with other jobs
+  codecov:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download test artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: test-reports
+          
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          fail_ci_if_error: false 
