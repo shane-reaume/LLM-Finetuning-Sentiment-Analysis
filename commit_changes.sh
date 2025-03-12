@@ -61,6 +61,40 @@ if git commit -m "$COMMIT_MESSAGE"; then
             exit 1
         fi
     fi
+    
+    # Ask if user wants to deploy badges to GitHub Pages
+    if [ -d "_site" ]; then
+        read -p "Do you want to deploy badges to GitHub Pages? (y/n) " -n 1 -r
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            echo -e "${BLUE}Deploying badges to GitHub Pages...${NC}"
+            
+            # Create a temporary branch for GitHub Pages deployment
+            TEMP_BRANCH="gh-pages-temp-$(date +%s)"
+            git checkout -b $TEMP_BRANCH
+            
+            # Copy _site contents to the root and commit
+            cp -r _site/* .
+            git add *.json reports/ htmlcov/
+            git commit -m "Update badges and reports [skip ci]"
+            
+            # Push to gh-pages branch
+            if git push -f origin $TEMP_BRANCH:gh-pages; then
+                echo -e "${GREEN}Badges deployed successfully to GitHub Pages!${NC}"
+            else
+                echo -e "${RED}GitHub Pages deployment failed.${NC}"
+                git checkout -
+                git branch -D $TEMP_BRANCH
+                exit 1
+            fi
+            
+            # Return to previous branch
+            git checkout -
+            git branch -D $TEMP_BRANCH
+        fi
+    else
+        echo -e "${YELLOW}No _site directory found. Run ./run_tests_with_coverage.sh to generate badges.${NC}"
+    fi
 else
     echo -e "${RED}Commit failed.${NC}"
     exit 1

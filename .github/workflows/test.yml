@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [ main ]
 
+# Sets permissions of the GITHUB_TOKEN for this workflow
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -65,9 +71,16 @@ jobs:
           echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
           echo "Coverage: $COVERAGE%"
           
+          # Create site directory for GitHub Pages
+          mkdir -p _site
+          
+          # Copy reports to site directory
+          mkdir -p _site/reports
+          cp -r reports/* _site/reports/ || true
+          cp -r htmlcov _site/ || true
+          
           # Create coverage badge JSON
-          mkdir -p badges
-          cat > badges/coverage-badge.json << EOF
+          cat > _site/coverage-badge.json << EOF
           {
             "schemaVersion": 1,
             "label": "coverage",
@@ -77,7 +90,7 @@ jobs:
           EOF
           
           # Create challenge tests badge JSON
-          cat > badges/challenge-tests-badge.json << EOF
+          cat > _site/challenge-tests-badge.json << EOF
           {
             "schemaVersion": 1,
             "label": "challenge tests",
@@ -85,56 +98,22 @@ jobs:
             "color": "$([ $ACCURACY -ge 90 ] && echo 'brightgreen' || [ $ACCURACY -ge 80 ] && echo 'green' || [ $ACCURACY -ge 70 ] && echo 'yellowgreen' || [ $ACCURACY -ge 60 ] && echo 'yellow' || echo 'red')"
           }
           EOF
-          
-      - name: Deploy badges to GitHub Pages
+      
+      # Use the actions/deploy-pages action to deploy to GitHub Pages
+      - name: Setup Pages
         if: github.ref == 'refs/heads/main'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Deploying badges to GitHub Pages..."
+        uses: actions/configure-pages@v4
           
-          # Clone gh-pages branch to a temporary directory
-          TEMP_DIR=$(mktemp -d)
-          git clone --branch=gh-pages --single-branch --depth=1 https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git ${TEMP_DIR} || mkdir -p ${TEMP_DIR}
-          
-          # Create gh-pages branch if it doesn't exist
-          if [ ! -d "${TEMP_DIR}/.git" ]; then
-            cd ${TEMP_DIR}
-            git init
-            git checkout -b gh-pages
-            git remote add origin https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-            cd -
-          fi
-          
-          # Copy badge files to gh-pages directory
-          cp -r badges/* ${TEMP_DIR}/
-          
-          # Commit and push changes
-          cd ${TEMP_DIR}
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git add .
-          git commit -m "Update badges" || echo "No changes to commit"
-          git push -u origin gh-pages
-          cd -
-          
-      - name: Verify deployment
+      - name: Upload artifacts to GitHub Pages
         if: github.ref == 'refs/heads/main'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "Waiting for GitHub Pages deployment to complete..."
-          sleep 10
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
           
-          # Check if badges are accessible
-          COVERAGE_BADGE_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/gh-pages/coverage-badge.json"
-          CHALLENGE_BADGE_URL="https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/gh-pages/challenge-tests-badge.json"
-          
-          echo "Verifying coverage badge at: $COVERAGE_BADGE_URL"
-          curl -s $COVERAGE_BADGE_URL || echo "Coverage badge not found, but continuing..."
-          
-          echo "Verifying challenge tests badge at: $CHALLENGE_BADGE_URL"
-          curl -s $CHALLENGE_BADGE_URL || echo "Challenge tests badge not found, but continuing..."
+      - name: Deploy to GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        id: deployment
+        uses: actions/deploy-pages@v4
           
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3

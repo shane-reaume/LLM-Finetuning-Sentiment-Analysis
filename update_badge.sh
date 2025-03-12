@@ -27,25 +27,10 @@ fi
 
 echo -e "${BLUE}Updating badge with accuracy: ${ACCURACY}%${NC}"
 
-# Create a temporary directory
-TEMP_DIR=$(mktemp -d)
-echo -e "${BLUE}Created temporary directory: ${TEMP_DIR}${NC}"
-
-# Function to clean up temporary directory
-cleanup() {
-    echo -e "${BLUE}Cleaning up...${NC}"
-    rm -rf "$TEMP_DIR"
-}
-
-# Trap to ensure cleanup on exit
-trap cleanup EXIT
-
-# Clone the gh-pages branch
-echo -e "${BLUE}Cloning gh-pages branch...${NC}"
-git clone --single-branch --branch gh-pages https://github.com/shane-reaume/LLM-Finetuning-Sentiment-Analysis.git "$TEMP_DIR"
-
-# Change to the temporary directory
-cd "$TEMP_DIR"
+# Create artifacts directory if it doesn't exist
+ARTIFACTS_DIR="_site"
+mkdir -p "$ARTIFACTS_DIR"
+echo -e "${BLUE}Using artifacts directory: ${ARTIFACTS_DIR}${NC}"
 
 # Determine color based on accuracy
 if [ "$ACCURACY" -ge 90 ]; then
@@ -62,7 +47,7 @@ fi
 
 # Create badge data
 echo -e "${BLUE}Creating badge data...${NC}"
-cat > challenge-tests-badge.json << EOF
+cat > "${ARTIFACTS_DIR}/challenge-tests-badge.json" << EOF
 {
   "schemaVersion": 1,
   "label": "challenge tests",
@@ -71,19 +56,17 @@ cat > challenge-tests-badge.json << EOF
 }
 EOF
 
-# Commit and push changes
-echo -e "${BLUE}Committing and pushing changes...${NC}"
-git config user.name "Badge Update Script"
-git config user.email "noreply@example.com"
-git add challenge-tests-badge.json
-git commit -m "Update challenge tests badge to ${ACCURACY}%"
+# Create reports directory if it doesn't exist
+mkdir -p "${ARTIFACTS_DIR}/reports"
 
-# Ask for GitHub credentials
-echo -e "${YELLOW}You will need to enter your GitHub credentials to push the changes.${NC}"
-git push
+# Copy any existing reports if they exist
+if [ -d "reports" ]; then
+    cp -r reports/* "${ARTIFACTS_DIR}/reports/"
+fi
 
 echo -e "${GREEN}Badge updated successfully!${NC}"
 echo -e "${BLUE}The badge should now show ${ACCURACY}% accuracy.${NC}"
 echo -e "${BLUE}You can view it at: https://shane-reaume.github.io/LLM-Finetuning-Sentiment-Analysis/challenge-tests-badge.json${NC}"
+echo -e "${YELLOW}Note: You'll need to deploy the contents of the ${ARTIFACTS_DIR} directory to GitHub Pages for the badge to be visible.${NC}"
 
 exit 0 

@@ -13,7 +13,7 @@ set -e
 echo -e "${BLUE}=== Running tests with coverage ===${NC}"
 
 # Create necessary directories
-mkdir -p reports htmlcov
+mkdir -p reports htmlcov _site _site/reports
 
 # Run pytest with coverage
 echo -e "${YELLOW}Running pytest with coverage...${NC}"
@@ -43,10 +43,13 @@ echo -e "${YELLOW}Coverage results:${NC}"
 COVERAGE=$(python -c "import xml.etree.ElementTree as ET; tree = ET.parse('coverage.xml'); root = tree.getroot(); print(round(float(root.attrib['line-rate']) * 100))")
 echo -e "${GREEN}Coverage: ${COVERAGE}%${NC}"
 
+# Copy reports to _site directory
+cp -r reports/* _site/reports/ || true
+cp -r htmlcov _site/ || true
+
 # Generate coverage badge
 echo -e "${YELLOW}Generating coverage badge...${NC}"
-mkdir -p badges
-cat > badges/coverage-badge.json << EOF
+cat > _site/coverage-badge.json << EOF
 {
   "schemaVersion": 1,
   "label": "coverage",
@@ -57,7 +60,7 @@ EOF
 
 # Generate challenge tests badge
 echo -e "${YELLOW}Generating challenge tests badge...${NC}"
-cat > badges/challenge-tests-badge.json << EOF
+cat > _site/challenge-tests-badge.json << EOF
 {
   "schemaVersion": 1,
   "label": "challenge tests",
@@ -74,7 +77,7 @@ echo -e "HTML coverage report: ${YELLOW}htmlcov/index.html${NC}"
 if [ "$MODEL_EXISTS" = true ]; then
   echo -e "Challenge test results: ${YELLOW}reports/challenge_test_results.json${NC}"
 fi
-echo -e "Badge files: ${YELLOW}badges/coverage-badge.json${NC} and ${YELLOW}badges/challenge-tests-badge.json${NC}"
+echo -e "Badge files: ${YELLOW}_site/coverage-badge.json${NC} and ${YELLOW}_site/challenge-tests-badge.json${NC}"
 
 # Suggest next steps
 echo -e "${BLUE}=== Next Steps ===${NC}"

@@ -1,10 +1,10 @@
 # LLM-Finetuning-Sentiment-Analysis
 
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
-[![Code Coverage](https://codecov.io/gh/shane-reaume/LLM-Finetuning-Sentiment-Analysis/graph/badge.svg)](https://codecov.io/gh/shane-reaume/LLM-Finetuning-Sentiment-Analysis)
+[![Code Coverage](https://img.shields.io/endpoint?url=https://shane-reaume.github.io/LLM-Finetuning-Sentiment-Analysis/coverage-badge.json)](https://shane-reaume.github.io/LLM-Finetuning-Sentiment-Analysis/htmlcov/)
 [![Tests](https://github.com/shane-reaume/LLM-Finetuning-Sentiment-Analysis/actions/workflows/test.yml/badge.svg)](https://github.com/shane-reaume/LLM-Finetuning-Sentiment-Analysis/actions/workflows/test.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Challenge Tests](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/shane-reaume/LLM-Finetuning-Sentiment-Analysis/gh-pages/challenge-tests-badge.json)](https://shane-reaume.github.io/LLM-Finetuning-Sentiment-Analysis/reports/challenge_test_results.html)
+[![Challenge Tests](https://img.shields.io/endpoint?url=https://shane-reaume.github.io/LLM-Finetuning-Sentiment-Analysis/challenge-tests-badge.json)](https://shane-reaume.github.io/LLM-Finetuning-Sentiment-Analysis/reports/challenge_test_results.html)
 
 A comprehensive educational project demonstrating transformer-based NLP model fine-tuning with robust QA practices. This repository showcases supervised fine-tuning of DistilBERT for binary sentiment classification, implementing advanced testing methodologies including adversarial examples, edge case handling, and performance benchmarking—all designed for ML practitioners seeking to improve model reliability and evaluation techniques.
 
