@@ -19,6 +19,10 @@ else
     COMMIT_MESSAGE="$1"
 fi
 
+# Get current branch
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+echo -e "${BLUE}Current branch: ${CURRENT_BRANCH}${NC}"
+
 echo -e "${BLUE}Committing changes with pre-commit hook disabled...${NC}"
 
 # Temporarily disable pre-commit hook
@@ -54,11 +58,23 @@ if git commit -m "$COMMIT_MESSAGE"; then
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         echo -e "${BLUE}Pushing changes...${NC}"
-        if git push; then
-            echo -e "${GREEN}Changes pushed successfully!${NC}"
+        # Handle the push differently depending on whether we're already on a temp branch
+        if [[ $CURRENT_BRANCH == gh-pages-temp-* ]]; then
+            # We're already on a temp branch, no need to set upstream
+            if git push -f origin HEAD:main; then
+                echo -e "${GREEN}Changes pushed successfully to main!${NC}"
+            else
+                echo -e "${RED}Push failed.${NC}"
+                exit 1
+            fi
         else
-            echo -e "${RED}Push failed.${NC}"
-            exit 1
+            # Normal push
+            if git push; then
+                echo -e "${GREEN}Changes pushed successfully!${NC}"
+            else
+                echo -e "${RED}Push failed.${NC}"
+                exit 1
+            fi
         fi
     fi
     
@@ -69,9 +85,18 @@ if git commit -m "$COMMIT_MESSAGE"; then
         if [[ $REPLY =~ ^[Yy]$ ]]; then
             echo -e "${BLUE}Deploying badges to GitHub Pages...${NC}"
             
-            # Create a temporary branch for GitHub Pages deployment
-            TEMP_BRANCH="gh-pages-temp-$(date +%s)"
-            git checkout -b $TEMP_BRANCH
+            # Save the original branch to return to later (if we're not already on a temp branch)
+            ORIGINAL_BRANCH=$CURRENT_BRANCH
+            
+            # If we're already on a temp branch, we'll use it
+            if [[ $CURRENT_BRANCH != gh-pages-temp-* ]]; then
+                # Create a temporary branch for GitHub Pages deployment
+                TEMP_BRANCH="gh-pages-temp-$(date +%s)"
+                git checkout -b $TEMP_BRANCH
+            else
+                TEMP_BRANCH=$CURRENT_BRANCH
+                echo -e "${YELLOW}Already on a temporary branch: ${TEMP_BRANCH}${NC}"
+            fi
             
             # Copy _site contents to the root and commit
             cp -r _site/* .
@@ -83,14 +108,19 @@ if git commit -m "$COMMIT_MESSAGE"; then
                 echo -e "${GREEN}Badges deployed successfully to GitHub Pages!${NC}"
             else
                 echo -e "${RED}GitHub Pages deployment failed.${NC}"
-                git checkout -
-                git branch -D $TEMP_BRANCH
+                # Only check out the original branch if we created a new one
+                if [[ $CURRENT_BRANCH != gh-pages-temp-* ]]; then
+                    git checkout $ORIGINAL_BRANCH
+                    git branch -D $TEMP_BRANCH
+                fi
                 exit 1
             fi
             
-            # Return to previous branch
-            git checkout -
-            git branch -D $TEMP_BRANCH
+            # Return to previous branch if we created a new one
+            if [[ $CURRENT_BRANCH != gh-pages-temp-* ]]; then
+                git checkout $ORIGINAL_BRANCH
+                git branch -D $TEMP_BRANCH
+            fi
         fi
     else
         echo -e "${YELLOW}No _site directory found. Run ./run_tests_with_coverage.sh to generate badges.${NC}"
