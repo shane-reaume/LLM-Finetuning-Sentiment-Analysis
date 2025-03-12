@@ -28,16 +28,36 @@ jobs:
           mkdir -p reports
           python -m pytest tests/ --cov=src --cov-report=xml --cov-report=html --cov-report=term
           
-      - name: Generate challenge test results
+      - name: Check if model exists
+        id: check_model
         run: |
-          python -m src.model.sentiment_evaluate_challenge --model_path="models/sentiment" --output_file="reports/challenge_test_results.json"
+          MODEL_EXISTS=false
+          if [ -f "models/sentiment/pytorch_model.bin" ] || [ -f "models/sentiment/model.safetensors" ]; then
+            MODEL_EXISTS=true
+            echo "Model files found, will run challenge tests"
+          else
+            echo "Model files not found, skipping challenge tests"
+          fi
+          echo "MODEL_EXISTS=$MODEL_EXISTS" >> $GITHUB_OUTPUT
+          
+      - name: Generate challenge test results
+        if: steps.check_model.outputs.MODEL_EXISTS == 'true'
+        run: |
+          python -m src.model.sentiment_challenge_test --model_dir="models/sentiment" --output="reports/challenge_test_results.json"
           
       - name: Calculate challenge test accuracy
         id: challenge_accuracy
+        if: steps.check_model.outputs.MODEL_EXISTS == 'true'
         run: |
-          ACCURACY=$(python -c "import json; data=json.load(open('reports/challenge_test_results.json')); print(round(data['accuracy'] * 100))")
+          ACCURACY=$(python -c "import json; data=json.load(open('reports/challenge_test_results.json')); print(round(data['summary']['accuracy'] * 100))")
           echo "ACCURACY=$ACCURACY" >> $GITHUB_ENV
           echo "Challenge test accuracy: $ACCURACY%"
+          
+      - name: Set default challenge accuracy (when no model)
+        if: steps.check_model.outputs.MODEL_EXISTS != 'true'
+        run: |
+          echo "ACCURACY=0" >> $GITHUB_ENV
+          echo "No challenge tests run, using default accuracy of 0%"
           
       - name: Generate coverage badge
         run: |
