@@ -60,9 +60,15 @@ print(result)
 
 ```bash
 git clone https://github.com/your-repo/LLM-Finetuning-Sentiment-Analysis.git
+
 cd LLM-Finetuning-Sentiment-Analysis
+
 chmod +x setup_env.sh  # Only needs to be done once
 ./setup_env.sh
+
+#WSL2 Ubuntu env
+chmod +x setup_env_wsl_ubuntu.sh  # Only needs to be done once
+./setup_env_wsl_ubuntu.sh
 ```
 
 This will:

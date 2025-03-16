@@ -1,10 +1,10 @@
 # LLM-Finetuning-Sentiment-Analysis
 
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
-[![Code Coverage](https://img.shields.io/endpoint?url=https://shane-reaume.github.io/LLM-Finetuning-Sentiment-Analysis/coverage-badge.json)](https://shane-reaume.github.io/LLM-Finetuning-Sentiment-Analysis/htmlcov/)
+[![Code Coverage](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/shane-reaume/LLM-Finetuning-Sentiment-Analysis/main/coverage-badge.json)](https://github.com/shane-reaume/LLM-Finetuning-Sentiment-Analysis/blob/main/coverage-badge.json)
 [![Tests](https://github.com/shane-reaume/LLM-Finetuning-Sentiment-Analysis/actions/workflows/test.yml/badge.svg)](https://github.com/shane-reaume/LLM-Finetuning-Sentiment-Analysis/actions/workflows/test.yml)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Challenge Tests](https://img.shields.io/endpoint?url=https://shane-reaume.github.io/LLM-Finetuning-Sentiment-Analysis/challenge-tests-badge.json)](https://shane-reaume.github.io/LLM-Finetuning-Sentiment-Analysis/reports/challenge_test_results.html)
+[![Challenge Tests](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/shane-reaume/LLM-Finetuning-Sentiment-Analysis/main/challenge-tests-badge.json)](https://github.com/shane-reaume/LLM-Finetuning-Sentiment-Analysis/blob/main/challenge-tests-badge.json)
 
 A comprehensive educational project demonstrating transformer-based NLP model fine-tuning with robust QA practices. This repository showcases supervised fine-tuning of DistilBERT for binary sentiment classification, implementing advanced testing methodologies including adversarial examples, edge case handling, and performance benchmarking—all designed for ML practitioners seeking to improve model reliability and evaluation techniques.
 
@@ -191,41 +191,86 @@ xdg-open htmlcov/index.html  # On Linux
 python -m src.utils.identify_low_coverage --threshold 50 --format markdown --output coverage_report.md
 ```
 
-## Troubleshooting
+## Development Workflow
 
-### Git Hooks Issues
+### Local Development
 
-If you encounter issues with the pre-commit hook preventing you from committing changes:
-
-1. **Ensure your virtual environment is activated**:
-
+1. **Run Tests Locally First**
    ```bash
+   # Activate virtual environment
    source venv/bin/activate
+   
+   # Run tests with coverage
+   ./run_tests_with_coverage.sh
    ```
 
-2. **Run tests manually** to see what's failing:
-
+2. **Standard Git Workflow**
    ```bash
-   ./run_tests.sh
+   # Check status of your changes
+   git status
+   
+   # Stage your changes
+   git add .  # Stage all changes
+   # or
+   git add path/to/specific/file  # Stage specific files
+   
+   # Commit your changes
+   git commit -m "Your descriptive commit message"
+   
+   # Push changes to remote
+   git push origin main  # or your current branch
    ```
 
-3. **Use the force push script** to temporarily bypass hooks:
+   Most modern IDEs provide integrated git support for these operations through their source control interface.
 
+3. **Pre-commit Hook Handling**
+   The repository uses pre-commit hooks to ensure code quality. If you need to bypass these hooks temporarily:
    ```bash
+   # For a single commit
+   git commit --no-verify -m "Your commit message"
+   
+   # Or use the provided script for more complex cases
    ./force_push.sh
    ```
 
-4. **Disable hooks temporarily** for a single commit:
+### Continuous Integration
 
+- GitHub Actions automatically runs code quality tests on push/PR
+- Coverage reports are generated and badges are updated
+- Model-related tests should be run locally before pushing
+
+### Badge Updates
+
+- Code coverage and test badges update automatically via GitHub Actions
+- Challenge test badges should be updated locally before pushing:
+  ```bash
+  # Run challenge tests and update badge
+  python -m src.model.sentiment_challenge_test --update-badge
+  ```
+
+## Troubleshooting
+
+### Common Git Issues
+
+1. **Pre-commit Hook Failures**
+   - Run tests locally to identify issues: `./run_tests.sh`
+   - Check the error output in your terminal
+   - Fix the identified issues or use `--no-verify` if needed
+
+2. **Git Configuration Issues**
    ```bash
-   git commit --no-verify -m "Your commit message"
+   # Verify your git configuration
+   git config --list
+   
+   # Set up your identity if needed
+   git config --global user.name "Your Name"
+   git config --global user.email "your.email@example.com"
    ```
 
-5. **Reinstall hooks** if they become corrupted:
-
-   ```bash
-   ./setup_hooks.sh
-   ```
+3. **Test Failures**
+   - Check test output for specific failures
+   - Ensure virtual environment is activated
+   - Verify all dependencies are installed
 
 ## Integrations
 
