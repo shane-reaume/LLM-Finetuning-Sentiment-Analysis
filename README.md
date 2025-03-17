@@ -193,9 +193,35 @@ python -m src.utils.identify_low_coverage --threshold 50 --format markdown --out
 
 ## Development Workflow
 
+### Branch Strategy
+
+This project uses a two-branch strategy to maintain clean development:
+
+1. **`main` branch**:
+   - Production-ready code
+   - Protected branch - requires PR approval
+   - Badge updates happen here
+   - Release versions are tagged from this branch
+
+2. **`develop` branch**:
+   - Main development branch
+   - Feature branches merge here first
+   - Tests run but no badge updates
+   - Merges to `main` when ready to release
+
 ### Local Development
 
-1. **Run Tests Locally First**
+1. **Start New Work**
+   ```bash
+   # Ensure you're on develop branch
+   git checkout develop
+   git pull  # Get latest changes
+   
+   # Create feature branch
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **Run Tests Locally First**
    ```bash
    # Activate virtual environment
    source venv/bin/activate
@@ -204,7 +230,7 @@ python -m src.utils.identify_low_coverage --threshold 50 --format markdown --out
    ./run_tests_with_coverage.sh
    ```
 
-2. **Standard Git Workflow**
+3. **Standard Git Workflow**
    ```bash
    # Check status of your changes
    git status
@@ -218,30 +244,35 @@ python -m src.utils.identify_low_coverage --threshold 50 --format markdown --out
    git commit -m "Your descriptive commit message"
    
    # Push changes to remote
-   git push origin main  # or your current branch
+   git push origin feature/your-feature-name
    ```
 
-   Most modern IDEs provide integrated git support for these operations through their source control interface.
+4. **Create Pull Request**
+   - Create PR to merge your feature branch into `develop`
+   - Once approved, merge to `develop`
+   - When ready for release, create PR from `develop` to `main`
 
-3. **Pre-commit Hook Handling**
-   The repository uses pre-commit hooks to ensure code quality. If you need to bypass these hooks temporarily:
-   ```bash
-   # For a single commit
-   git commit --no-verify -m "Your commit message"
-   
-   # Or use the provided script for more complex cases
-   ./force_push.sh
-   ```
+### Pre-commit Hook Handling
+The repository uses pre-commit hooks to ensure code quality. If you need to bypass these hooks temporarily:
+```bash
+# For a single commit
+git commit --no-verify -m "Your commit message"
+
+# Or use the provided script for more complex cases
+./force_push.sh
+```
 
 ### Continuous Integration
 
-- GitHub Actions automatically runs code quality tests on push/PR
-- Coverage reports are generated and badges are updated
+- GitHub Actions runs tests on both `main` and `develop` branches
+- Coverage reports are generated for all branches
+- Badge updates only occur on `main` branch
 - Model-related tests should be run locally before pushing
 
 ### Badge Updates
 
-- Code coverage and test badges update automatically via GitHub Actions
+- Code coverage and test badges update automatically on `main` via GitHub Actions
+- Updates only occur when coverage actually changes
 - Challenge test badges should be updated locally before pushing:
   ```bash
   # Run challenge tests and update badge

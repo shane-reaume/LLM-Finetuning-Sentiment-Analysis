@@ -2,9 +2,9 @@ name: Run Tests and Update Badges
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, develop ]
 
 # Sets permissions of the GITHUB_TOKEN for this workflow
 permissions:
@@ -50,14 +50,22 @@ jobs:
           python -m src.model.sentiment_challenge_test --model_dir="models/sentiment" --output="reports/challenge_test_results.json"
           
       - name: Update coverage badge
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         run: |
-          # Create or update coverage badge
+          # Get current coverage from badge if it exists
+          CURRENT_COVERAGE=""
+          if [ -f "coverage-badge.json" ]; then
+            CURRENT_COVERAGE=$(jq -r '.message' coverage-badge.json | sed 's/%//')
+          fi
+          
+          # Calculate new coverage
           COVERAGE=$(python -c "import xml.etree.ElementTree as ET; tree = ET.parse('coverage.xml'); root = tree.getroot(); print(root.attrib['line-rate'])")
           COVERAGE_PCT=$(python -c "print(round(float('${COVERAGE}') * 100, 2))")
-          echo "{\"schemaVersion\": 1, \"label\": \"coverage\", \"message\": \"${COVERAGE_PCT}%\", \"color\": \"green\"}" > coverage-badge.json
           
-          if [ -f "coverage-badge.json" ]; then
+          # Only update if coverage changed or badge doesn't exist
+          if [ "$CURRENT_COVERAGE" != "$COVERAGE_PCT" ]; then
+            echo "{\"schemaVersion\": 1, \"label\": \"coverage\", \"message\": \"${COVERAGE_PCT}%\", \"color\": \"green\"}" > coverage-badge.json
+            
             git config --local user.email "action@github.com"
             git config --local user.name "GitHub Action"
             git add coverage-badge.json
