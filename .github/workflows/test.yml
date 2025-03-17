@@ -9,8 +9,6 @@ on:
 # Sets permissions of the GITHUB_TOKEN for this workflow
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 jobs:
   test:
@@ -51,44 +49,6 @@ jobs:
         run: |
           python -m src.model.sentiment_challenge_test --model_dir="models/sentiment" --output="reports/challenge_test_results.json"
           
-      - name: Run tests only as verification
-        run: |
-          # Create site directory for GitHub Pages
-          mkdir -p _site
-          
-          # Copy reports to site directory
-          mkdir -p _site/reports
-          cp -r reports/* _site/reports/ || true
-          cp -r htmlcov _site/ || true
-          
-          # Copy existing badge files from repository (the source of truth)
-          cp challenge-tests-badge.json _site/
-          cp coverage-badge.json _site/
-          
-          # Create .nojekyll file to bypass Jekyll processing
-          touch _site/.nojekyll
-      
-      # Use the actions/deploy-pages action to deploy to GitHub Pages
-      - name: Setup Pages
-        if: github.ref == 'refs/heads/main'
-        uses: actions/configure-pages@v4
-          
-      - name: Upload artifacts to GitHub Pages
-        if: github.ref == 'refs/heads/main'
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '_site'
-          
-      # Upload test reports as artifacts
-      - name: Upload test reports as artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-reports
-          path: |
-            reports/
-            htmlcov/
-            coverage.xml
-          
       - name: Update coverage badge
         if: github.ref == 'refs/heads/main'
         run: |
@@ -105,23 +65,16 @@ jobs:
             git push || echo "No changes to push"
           fi
           
-  # Deploy job
-  deploy:
-    if: github.ref == 'refs/heads/main'
-    needs: test
-    runs-on: ubuntu-latest
-    
-    # Deploy to the github-pages environment
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-      
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+      # Upload test reports as artifacts
+      - name: Upload test reports as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            reports/
+            htmlcov/
+            coverage.xml
           
-  # Continue with other jobs
   codecov:
     needs: test
     runs-on: ubuntu-latest
