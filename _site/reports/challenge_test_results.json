@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-03-16 12:27:56",
+  "timestamp": "2025-03-16 17:43:30",
   "results": [
     {
       "text": "The show simultaneously strains for aspiration and relatability in a way that never gels.",
@@ -9,7 +9,7 @@
       "correct": false,
       "category": "subtle_negative",
       "notes": "Uses sophisticated vocabulary with negative connotations",
-      "inference_time": 0.21989846229553223
+      "inference_time": 0.2029569149017334
     },
     {
       "text": "While the visuals are stunning, the plot is completely nonsensical.",
@@ -19,7 +19,7 @@
       "correct": true,
       "category": "mixed_sentiment",
       "notes": "Contains positive elements but overall negative",
-      "inference_time": 0.004882097244262695
+      "inference_time": 0.004489421844482422
     },
     {
       "text": "The dialogue is so natural, said no one ever about this movie.",
@@ -29,7 +29,7 @@
       "correct": false,
       "category": "sarcasm",
       "notes": "Sarcastic statement that appears positive at first",
-      "inference_time": 0.0041446685791015625
+      "inference_time": 0.004094123840332031
     },
     {
       "text": "I can't say I didn't enjoy parts of the film.",
@@ -39,7 +39,7 @@
       "correct": false,
       "category": "negation",
       "notes": "Double negative that expresses mild positive sentiment",
-      "inference_time": 0.004766225814819336
+      "inference_time": 0.004580497741699219
     },
     {
       "text": "The film isn't terrible, but that's about the best thing I can say about it.",
@@ -49,7 +49,7 @@
       "correct": false,
       "category": "negation",
       "notes": "Negation with a backhanded compliment",
-      "inference_time": 0.004496574401855469
+      "inference_time": 0.004469156265258789
     },
     {
       "text": "The acting leaves much to be desired.",
@@ -59,7 +59,7 @@
       "correct": false,
       "category": "subtle_negative",
       "notes": "Euphemistic expression of criticism",
-      "inference_time": 0.004674673080444336
+      "inference_time": 0.0042877197265625
     },
     {
       "text": "For fans of the genre, this might be tolerable.",
@@ -69,7 +69,7 @@
       "correct": true,
       "category": "subtle_negative",
       "notes": "Backhanded compliment suggesting low quality",
-      "inference_time": 0.0043261051177978516
+      "inference_time": 0.004119396209716797
     },
     {
       "text": "The director certainly made some choices.",
@@ -79,7 +79,7 @@
       "correct": false,
       "category": "subtle_negative",
       "notes": "Neutral-sounding but implying poor decisions",
-      "inference_time": 0.004348039627075195
+      "inference_time": 0.004293680191040039
     },
     {
       "text": "It's impressive how they managed to waste such a talented cast.",
@@ -89,7 +89,7 @@
       "correct": false,
       "category": "sarcasm",
       "notes": "Uses positive word 'impressive' sarcastically",
-      "inference_time": 0.004846334457397461
+      "inference_time": 0.004999399185180664
     },
     {
       "text": "I wouldn't not recommend watching it if you have absolutely nothing else to do.",
@@ -99,7 +99,7 @@
       "correct": true,
       "category": "negation",
       "notes": "Complex negation with an overall negative sentiment",
-      "inference_time": 0.004392147064208984
+      "inference_time": 0.004358768463134766
     },
     {
       "text": "The film manages to be both pretentious and shallow at the same time.",
@@ -109,7 +109,7 @@
       "correct": true,
       "category": "subtle_negative",
       "notes": "Criticism using sophisticated vocabulary",
-      "inference_time": 0.0042247772216796875
+      "inference_time": 0.004724740982055664
     }
   ],
   "summary": {
